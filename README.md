@@ -19,7 +19,7 @@ To run the application:
 2) install dependencies using: npm install
 3) Run application run with commnad: ng serve
 4) To generate build: ng build --prod
-5) This app is running at this location: http://localhost:4200
+5) This app will run at this location: http://localhost:4200
 
 These endpoints are open for front-end to manipulate data.
 
@@ -40,7 +40,7 @@ To run the application:
 	c) GET - /api/todo/id    | To get single todo item.
 	d) PUT - /api/todo       | To update todo item.
 	e) DELETE - /api/todo    | To delete single or multiple todo.
-5) This app is running at this location: http://localhost:8096
+5) This app will run at this location: http://localhost:8096
 
 These endpoints are open for front-end to manipulate data.
 
