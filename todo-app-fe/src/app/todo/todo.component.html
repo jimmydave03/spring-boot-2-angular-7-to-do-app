@@ -1,0 +1,143 @@
+<main class="container">
+
+	<div class="starter-template text-center">
+		<h1>To-Do application</h1>
+        <p class="lead">Use this application to create your daily To-Do.<br> This app is developed using Java 8, Spring boot 2, Angular 7 and MySql.</p>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<button [disabled]="!selectedAll" class="btn btn-danger pull-right mb-1" (click)="deleteAllTodo();"><i class="fa fa-minus" aria-hidden="true"> Delete All</i></button>
+			<a href="javascript:;" class="btn btn-info pull-right mb-1 mr-1" (click)="openTodoModal();"><i class="fa fa-plus" aria-hidden="true"> Add</i></a>
+			<table class="table">
+			  	<thead class="thead-dark">
+				    <tr>
+				      	<th scope="col">
+					      	<div class="form-check">
+							  <input class="form-check-input" type="checkbox" id="selectAllCheckbox" (change)="selectAll()" [checked]="selectedAll">
+							  <label class="form-check-label" for="inlineCheckbox1">#</label>
+							</div>
+						</th>
+				    	<th scope="col">Date</th>
+				      	<th scope="col">Title</th>
+				      	<th scope="col">Descrition</th>
+				      	<th scope="col">Action</th>
+				    </tr>
+			  	</thead>
+			  	<tbody *ngIf="todosList?.length>0">
+				    <tr *ngFor="let mytodo of todosList; index as i">
+					    <td scope="row">
+					    	<div class="form-check">
+							  <input class="form-check-input" type="checkbox" [(ngModel)]="mytodo.selected" id="blankCheckbox" value="{{mytodo.id}}" (change)="selectOne()">
+							  <label class="form-check-label" for="inlineCheckbox1">{{i + 1}}</label>
+							</div></td>
+					    <td>{{mytodo.createdDate | date:'medium'}}</td>
+					    <td>{{mytodo.title}}</td>
+					    <td>{{mytodo.description}}</td>
+					    <td>
+					    	<a href="javascript:;"><i style="font-size:20px;" class="fa fa-edit text-info"
+				                  (click)="updateTodo(mytodo.id);" data-toggle="tooltip" data-placement="bottom"
+				                  title="Update"></i>
+				            </a>&nbsp;
+				            <a href="javascript:;" (click)="deleteTodo(mytodo.id);" data-toggle="tooltip" data-placement="bottom"
+				                title="Delete"><i class="fa fa-trash-o text-danger" style="font-size:20px;"></i>
+				            </a>
+				        </td>
+				    </tr>
+			  </tbody>
+			  <tbody *ngIf="todosList?.length === 0">
+			  		<tr class="text-center">
+				    	<td colspan="5"><h3>No To-Do found.</h3></td>
+				    </tr>
+			  </tbody>
+			</table>
+		</div>
+	</div>
+</main>
+
+<!-- Add todo model pop up. -->
+<div class="modal fade" id="todoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add To-Do</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="todoForm" (ngSubmit)="todoForm.valid ? onToDoFormSubmit() : required = true ">
+          <div class="form-group row">
+            <div class="col-lg-2">
+              <label class="label">Title:</label>
+            </div>
+            <div class="col-lg-10"
+              [ngClass]="{' has-danger ': !todoForm.controls['title'].valid && todo.title?.length == 0 && required }">
+              <input class="form-control" [(ngModel)]="todo.title" formControlName="title" type="text"
+                id="title" [ngClass]="displayFieldCss('title')">
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-lg-2">
+              <label class="label">Date:</label>
+            </div>
+            <div class="col-lg-10">
+              <input class="form-control" [min]="min" [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1" [(ngModel)]="todo.createdDate" formControlName="createdDate"
+                id="createdDate" placeholder="Date Time" [ngClass]="displayFieldCss('createdDate')">
+				<owl-date-time [pickerMode]="'dialog'" #dt1></owl-date-time>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-lg-2">
+              <label class="label">Description:</label>
+            </div>
+            <div class="col-lg-10">
+              <textarea class="form-control" [(ngModel)]="todo.description" formControlName="description" type="text" id="description" [ngClass]="displayFieldCss('description')"></textarea>
+            </div>
+          </div>
+          <div class="form-group row pull-right">
+            <div class="col-lg-2">
+              <button [disabled]="loading" type="submit" class="btn btn-success">
+                <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i>Add</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete To-do. -->
+<div id="deleteTodoModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5><b>Do you want to delete To-Do?</b></h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        <button type="button" [disabled]="loading" (click)="deleteTodoSure();" class="btn btn-primary">Yes
+          <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete All To-do. -->
+<div id="deleteAllTodoModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5><b>Do you want to delete All To-Do(s)?</b></h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        <button type="button" [disabled]="loading" (click)="deleteAllTodoSure();" class="btn btn-primary">Yes
+          <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
