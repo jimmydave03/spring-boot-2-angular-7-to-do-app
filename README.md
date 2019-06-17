@@ -1,4 +1,4 @@
-Welcome to My To-Do app.
+Welcome to My To-Do app. Screenshots are added into "screenshot" folder.
 
 This application is devided into 2 parts. 
 
